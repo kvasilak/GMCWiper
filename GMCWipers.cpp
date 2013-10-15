@@ -233,14 +233,14 @@ void GMCWipers::WipersDo()
 		}
     } 
     
-    //if switch is in run mode speed follows pot
-    if(LOW == WiperSpeedMode)
-    {
-       WiperSpeed(val);
-    }
-    else if(misting)
+    if(misting)
     {
       WipersMisting();
+    }
+    //if switch is in run mode speed follows pot
+    else if(LOW == WiperSpeedMode)
+    {
+       WiperSpeed(val);
     }
     else if(LOW == WiperDelayMode)//pot controls time between sweeps
     {  
