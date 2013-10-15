@@ -29,8 +29,7 @@
 
 #include <Arduino.h> 
 #include <Servo.h>	
-#include <Debounced.h>
-#include <GMCWipers.h>
+#include "GMCWipers.h"
 
 
 GMCWipers theWipers;
