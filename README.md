@@ -25,4 +25,6 @@ The hardware consists of the following;<br>
     This button can be triggered off the winshield washer button with a relay etc if desired<br>
 6. An arduino microcontroller to ead all the inputs and control the servo. This project uses the 5v 16mhz Pro mini,<br>
     But there is no reason other implementations cannot be used.<br>
+7. A power supply with enough power to run the Arduino and the servo motor.<br>
+    I used a $2 ebay adjustable power supply with a 35 volt input rating. I set it to 6 volts to run the servo and use the internal mini pro regulator for the processor  
 <br>
