@@ -37,13 +37,15 @@ parkPin(9),
 SpeedmodePin(3),
 DelaymodePin(5),
 servoPin(10),
+#ifdef MISTENABLED
 mistPin(7),
+MISTSWEEPS(1),  
+#endif
 DEADBAND(10),
 SPEED_OFF(90),
 UNPARK(150),
 SPEED_MEDIUM(130),
-SPEED_HIGH(179),
-MISTSWEEPS(1)
+SPEED_HIGH(179)
 {
 
 }
@@ -60,7 +62,10 @@ void GMCWipers::Init()
   myservo.write(SPEED_OFF); //wipers off
   myservo.attach(servoPin);  // attaches the servo on pin 9 to the servo object
 
+#ifdef MISTENABLED
   WipersMist.attach(mistPin, true);     //attach with pullup
+#endif
+
   WiperSpeedMode.attach(SpeedmodePin, true);
   WiperDelayMode.attach(DelaymodePin, true);
   WipersParked.attach(parkPin, true);
@@ -142,6 +147,7 @@ void GMCWipers::WipersIntermitent(int val)
   }
 }
 
+#ifdef MISTENABLED
 void GMCWipers::WipersMisting()
 {
   static MStates_e state = mSTATE_SET;
@@ -208,6 +214,7 @@ void GMCWipers::WipersMisting()
       break;
   }
 }
+#endif
 
 void GMCWipers::WipersDo()
 {
@@ -215,6 +222,8 @@ void GMCWipers::WipersDo()
      
     //latch misting low on washer squirt
     //but not in speed mode
+    
+#ifdef MISTENABLED
     if((LOW == WipersMist) && (false == misting))
     {
         if(LOW == WiperSpeedMode)
@@ -238,7 +247,9 @@ void GMCWipers::WipersDo()
       WipersMisting();
     }
     //if switch is in run mode speed follows pot
-    else if(LOW == WiperSpeedMode)
+    else 
+#endif
+    if(LOW == WiperSpeedMode)
     {
        WiperSpeed(val);
     }
@@ -246,11 +257,18 @@ void GMCWipers::WipersDo()
     {  
       WipersIntermitent(val);
     }
+    else //park the wipers if they are off
+    {
+        myservo.write(SPEED_OFF);
+    }
 }
 
 void GMCWipers::Update()
 {
+#ifdef MISTENABLED
   WipersMist.Update();
+#endif
+
   WiperSpeedMode.Update();
   WiperDelayMode.Update();
   WipersParked.Update();
