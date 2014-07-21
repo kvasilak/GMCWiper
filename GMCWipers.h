@@ -35,6 +35,7 @@ Servo myservo;  // create servo object to control a servo
 int val;    // variable to read the value from the analog pin
 int oldval;
 unsigned long StartTime;
+bool Parked;
 
 //i/o
 int potpin;  // analog pin used to connect the potentiometer

@@ -45,7 +45,8 @@ DEADBAND(10),
 SPEED_OFF(90),
 UNPARK(150),
 SPEED_MEDIUM(130),
-SPEED_HIGH(179)
+SPEED_HIGH(179),
+Parked(false)
 {
 
 }
@@ -73,6 +74,12 @@ void GMCWipers::Init()
   Serial.begin(9600);
 
   Serial.println("*******GMC wipermotor controller V1.0*********");
+  
+  //if not parked, park the wipers...
+  if(LOW != WipersParked)
+  {
+    Parked = false;
+  }
 }
 
 void GMCWipers::WiperSpeed(int val)
@@ -87,9 +94,8 @@ void GMCWipers::WipersIntermitent(int val)
 {
   unsigned long wipedelay;
 
-  //Start by parking the wipers in case they are
-  //already in motion
-  static IStates_e state = iSTATE_PARK;
+  //start the sweep mediately
+  static IStates_e state = iSTATE_UNPARK;
 
   switch(state)
   {
@@ -106,6 +112,7 @@ void GMCWipers::WipersIntermitent(int val)
         //no park switch, advance state anyway
         if(IsTimedOut(5000, StartTime))
         {
+            Parked = true;
             StartTime = millis();
             Serial.println("Park Timeout");
             state = iSTATE_DELAY;
@@ -114,6 +121,7 @@ void GMCWipers::WipersIntermitent(int val)
         //...wait for park switch   
         if(LOW == WipersParked )
         {
+            Parked = true;
             StartTime = millis();
             Serial.println("Parked");
             state = iSTATE_DELAY;
@@ -130,6 +138,7 @@ void GMCWipers::WipersIntermitent(int val)
       }
       break;
     case iSTATE_UNPARK:
+        Parked = false;
       //unpark wipers so they make a sweep
       myservo.write(UNPARK);
       Serial.println("Start sweep");
@@ -253,7 +262,9 @@ void GMCWipers::WipersDo()
     {
        WiperSpeed(val);
     }
-    else if(LOW == WiperDelayMode)//pot controls time between sweeps
+    //pot controls time between sweeps
+    //always run till park complete
+    else if((LOW == WiperDelayMode) || (false==Parked) )
     {  
       WipersIntermitent(val);
     }
